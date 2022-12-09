@@ -1,27 +1,65 @@
 from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QLabel, QLineEdit, QVBoxLayout, \
+    QGridLayout, QStyleFactory
 import sys
 
 
-class AppWin(QMainWindow):
+class AppWindow(QMainWindow):
+    calc_btn = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '+', '-', '*', '/', '%', '(', ')', '=')
+    numbers = {}
+    actions = {}
+    total = 0
+
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Booooooo")
-        self.setFixedSize(QSize(300, 350))
-        plus_btn = QPushButton("+")
-        plus_btn.setCheckable(True)
-        plus_btn.clicked.connect(self.plus)
-        self.setCentralWidget(plus_btn)
+        self.setWindowTitle("Simple Calculator")
+        self.setFixedSize(QSize(300, 560))
+        # TODO extract to function 1
+        # self.btn0 = QPushButton('0')
+        key_layout = QGridLayout()
+        self.row = 0
+        self.position = 0
+        for btn in self.calc_btn:
+            tmp_name = 'btn_' + btn
+            self.tmp_name = QPushButton(btn)
+            key_layout.addWidget(self.tmp_name, self.row, self.position)
+            if self.position < 2:
+                self.position += 1
+            else:
+                self.position = 0
+                self.row += 1
 
-    def plus(self):
-        print("PLUS action")
+        keypad = QWidget()
+        keypad.setFixedSize(150, 150)
+        keypad.setLayout(key_layout)
+
+        main_grid = QWidget()
+        main_layout = QGridLayout()
+        main_layout.addWidget(keypad)
+        main_grid.setLayout(main_layout)
+
+        self.setCentralWidget(main_grid)
+
+    # def plus(self):
+    #     self.actions.append('+')
+    #
+    # def minus(self):
+    #     self.actions.append('-')
+    #
+    # def multiply(self):
+    #     self.actions.append('*')
+    #
+    # def divide(self):
+    #     self.actions.append('/')
+    #
+    # def calculate(self):
+    #    self.parseInput()
 
 
 app = QApplication(sys.argv)
-
-win = AppWin()
+app.setStyle('Fusion')
+win = AppWindow()
 win.show()
 
 app.exec()
-
