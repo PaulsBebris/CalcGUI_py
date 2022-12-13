@@ -6,11 +6,12 @@ import math
 
 
 class AppWindow(QMainWindow):
-    calc_btn = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '0')
-    act_btn = ('+', '-', '*', '/', '%', '(', ')', '=')
+    calc_num_btn = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '0')
+    calc_act_btn = ('+', '-', '*', '/', '%', '(', ')', '=', 'CLR')
     numbers = []
     actions = []
     total = 0
+    show_expr_win = ''
 
     def __init__(self):
         super().__init__()
@@ -20,9 +21,9 @@ class AppWindow(QMainWindow):
         # TODO extract to function 1
         # self.btn0 = QPushButton('0')
         key_layout = QGridLayout()
-        self.row = 0
+        self.row = 2
         self.position = 0
-        for btn in self.calc_btn:
+        for btn in self.calc_num_btn:
             tmp_name = 'btn_' + btn
             tmp_action = 'action_' + btn
             self.tmp_name = QPushButton(btn)
@@ -39,6 +40,11 @@ class AppWindow(QMainWindow):
             if btn == '0':
                 self.position = 0
 
+        self.show_expression = QLabel()
+        self.show_result = QLabel()
+        key_layout.addWidget(self.show_expression, 0, 0)
+        key_layout.addWidget(self.show_result, 1, 0)
+
         keypad = QWidget()
         keypad.setFixedSize(220, 180)
         keypad.setLayout(key_layout)
@@ -47,7 +53,7 @@ class AppWindow(QMainWindow):
         action_pad.setFixedSize(220, 120)
         action_pad.setLayout(action_layout)
 
-        for btn in self.act_btn:
+        for btn in self.calc_act_btn:
             tmp_name = 'btn_' + btn
             self.tmp_name = QPushButton(btn, self)
             self.tmp_name.setObjectName(btn)
@@ -71,19 +77,32 @@ class AppWindow(QMainWindow):
         self.num_to_add = ''
     def parse_keyb(self):
         self.btn_value = self.sender().objectName()
+        self.show_expr_win += self.btn_value
+        self.show_expression.setText(self.show_expr_win)
         # CALCULATE - parse entries and put numbers and actions in dictionaries
-        if self.btn_value == '=':
-            self.numbers.append(self.num_to_add)
-            print(self.numbers)
-            print(self.actions)
-            self.calculate()
-        elif self.btn_value in self.calc_btn:
-            self.num_to_add += self.btn_value
-        else:
-            self.numbers.append(self.num_to_add)
-            self.actions.append(self.btn_value)
-            print(self.num_to_add)
+        if self.btn_value == 'CLR':
+            self.total = ''
+            self.btn_value = ''
             self.num_to_add = ''
+            self.numbers.clear()
+            self.actions.clear()
+        else:
+            if self.btn_value == '=':
+                self.numbers.append(self.num_to_add)
+                self.calculate()
+                self.show_expression.setText(str(self.show_expr_win))
+                self.show_result.setText(str(self.total))
+                # self.num_to_add = ''
+                # print(self.numbers)
+                # print(self.actions)
+            elif self.btn_value in self.calc_num_btn:
+                self.num_to_add += self.btn_value
+            else:
+                # TODO if result is not empty, use result in calculations
+                self.numbers.append(self.num_to_add)
+                self.actions.append(self.btn_value)
+                # print(self.num_to_add)
+                self.num_to_add = ''
 
     # TODO extract to class
     # TODO implement actions with result and one number in numbers list
@@ -96,22 +115,20 @@ class AppWindow(QMainWindow):
         # do all plus
         # do all minus
         while not show_result:
+            # if use previous result
             if '*' in self.actions:
                 index = self.actions.index('*')
-                self.total = int(self.numbers[index]) * int(self.numbers[index+1])
-                self.actions.pop(index)
-                self.numbers.pop(index)
-                self.numbers.pop(index)
-                print(self.total)
-                show_result = True
-
-
-
-
-
-
-
-
+                if int(self.numbers[index]) >= 0 and int(self.numbers[index+1]) >= 0:
+                    print(self.numbers[index])
+                    print(self.numbers[index+1])
+                    self.total = int(self.numbers[index]) * int(self.numbers[index+1])
+                    self.actions.pop(index)
+                    self.numbers.pop(index)
+                    self.numbers.pop(index)
+                    show_result = True
+                    print(self.total)
+                else:
+                    self.total = 0
 
 app = QApplication(sys.argv)
 app.setStyle('Fusion')
