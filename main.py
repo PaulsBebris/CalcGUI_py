@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QLa
     QGridLayout, QStyleFactory
 import sys
 
+# TODO  extract code to separate functions, optimise for reading
 class AppWindow(QMainWindow):
     calc_num_btn = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '0')
     calc_act_btn = ('+', '-', '*', '/', '%', '(', ')', '=', 'CLR')
